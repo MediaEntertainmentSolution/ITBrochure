@@ -245,7 +245,12 @@
             const display = flipbook.turn('display');
             
             let info;
-            if(display === 'double' && current < total) {
+            
+if (current === 1) {
+    // Special case for first page
+    info = `Page 1 of ${total}`;
+
+} else if (display === 'double' && current < total) {
               info = `Pages ${current}-${current + 1} of ${total}`;
             } else {
               info = `Page ${current} of ${total}`;
