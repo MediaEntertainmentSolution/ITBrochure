@@ -136,6 +136,15 @@
       const EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
       const MAX_PAGES = 50;
       
+      async function getVersion() {
+        try {
+          const response = await fetch('version.txt');
+          return (await response.text()).trim();
+        } catch {
+          return Date.now().toString(); // fallback
+        }
+      }
+      
       async function checkImage(src) {
         return new Promise(resolve => {
           const img = new Image();
@@ -146,12 +155,12 @@
         });
       }
       
-      async function detectPages() {
+      async function detectPages(version) {
         const pages = [];
         for(let i = 1; i <= MAX_PAGES; i++) {
           let found = false;
           for(const ext of EXTENSIONS) {
-            const src = `${PREFIX}${i}.${ext}`;
+            const src = `${PREFIX}${i}.${ext}?v=${version}`;
             if(await checkImage(src)) {
               pages.push(src);
               found = true;
@@ -165,7 +174,8 @@
       
       async function init() {
         try {
-          const pages = await detectPages();
+          const version = await getVersion();
+          const pages = await detectPages(version);
           $("#loading").hide();
           
           if(pages.length === 0) {
